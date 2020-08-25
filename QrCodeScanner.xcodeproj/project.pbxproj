@@ -15,6 +15,7 @@
 		293ABA7F24F4FAE00039B879 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA7D24F4FAE00039B879 /* LaunchScreen.storyboard */; };
 		293ABA8724F4FB330039B879 /* QrCodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293ABA8624F4FB330039B879 /* QrCodeScanner.swift */; };
 		293ABA8924F505010039B879 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA8824F505010039B879 /* .gitignore */; };
+		293ABA8B24F51FD20039B879 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA8A24F51FD20039B879 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		293ABA8024F4FAE00039B879 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		293ABA8624F4FB330039B879 /* QrCodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QrCodeScanner.swift; sourceTree = "<group>"; };
 		293ABA8824F505010039B879 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		293ABA8A24F51FD20039B879 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +46,7 @@
 		293ABA6624F4FADE0039B879 = {
 			isa = PBXGroup;
 			children = (
+				293ABA8A24F51FD20039B879 /* README.md */,
 				293ABA8824F505010039B879 /* .gitignore */,
 				293ABA7124F4FADE0039B879 /* QrCodeScanner */,
 				293ABA7024F4FADE0039B879 /* Products */,
@@ -133,6 +136,7 @@
 			files = (
 				293ABA8924F505010039B879 /* .gitignore in Resources */,
 				293ABA7F24F4FAE00039B879 /* LaunchScreen.storyboard in Resources */,
+				293ABA8B24F51FD20039B879 /* README.md in Resources */,
 				293ABA7C24F4FAE00039B879 /* Assets.xcassets in Resources */,
 				293ABA7A24F4FADF0039B879 /* Main.storyboard in Resources */,
 			);
