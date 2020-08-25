@@ -13,6 +13,8 @@
 		293ABA7A24F4FADF0039B879 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA7824F4FADF0039B879 /* Main.storyboard */; };
 		293ABA7C24F4FAE00039B879 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA7B24F4FAE00039B879 /* Assets.xcassets */; };
 		293ABA7F24F4FAE00039B879 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA7D24F4FAE00039B879 /* LaunchScreen.storyboard */; };
+		293ABA8724F4FB330039B879 /* QrCodeScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293ABA8624F4FB330039B879 /* QrCodeScanner.swift */; };
+		293ABA8924F505010039B879 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 293ABA8824F505010039B879 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		293ABA7B24F4FAE00039B879 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		293ABA7E24F4FAE00039B879 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		293ABA8024F4FAE00039B879 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		293ABA8624F4FB330039B879 /* QrCodeScanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QrCodeScanner.swift; sourceTree = "<group>"; };
+		293ABA8824F505010039B879 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +44,7 @@
 		293ABA6624F4FADE0039B879 = {
 			isa = PBXGroup;
 			children = (
+				293ABA8824F505010039B879 /* .gitignore */,
 				293ABA7124F4FADE0039B879 /* QrCodeScanner */,
 				293ABA7024F4FADE0039B879 /* Products */,
 			);
@@ -59,6 +64,7 @@
 				293ABA7224F4FADE0039B879 /* AppDelegate.swift */,
 				293ABA7424F4FADE0039B879 /* SceneDelegate.swift */,
 				293ABA7624F4FADF0039B879 /* ViewController.swift */,
+				293ABA8624F4FB330039B879 /* QrCodeScanner.swift */,
 				293ABA7824F4FADF0039B879 /* Main.storyboard */,
 				293ABA7B24F4FAE00039B879 /* Assets.xcassets */,
 				293ABA7D24F4FAE00039B879 /* LaunchScreen.storyboard */,
@@ -125,6 +131,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				293ABA8924F505010039B879 /* .gitignore in Resources */,
 				293ABA7F24F4FAE00039B879 /* LaunchScreen.storyboard in Resources */,
 				293ABA7C24F4FAE00039B879 /* Assets.xcassets in Resources */,
 				293ABA7A24F4FADF0039B879 /* Main.storyboard in Resources */,
@@ -140,6 +147,7 @@
 			files = (
 				293ABA7724F4FADF0039B879 /* ViewController.swift in Sources */,
 				293ABA7324F4FADE0039B879 /* AppDelegate.swift in Sources */,
+				293ABA8724F4FB330039B879 /* QrCodeScanner.swift in Sources */,
 				293ABA7524F4FADE0039B879 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
