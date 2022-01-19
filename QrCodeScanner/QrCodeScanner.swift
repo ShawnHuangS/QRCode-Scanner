@@ -26,7 +26,7 @@ class QrCodeScanner: NSObject {
     private var cameraPresentView : UIView!
     lazy var qrCodeFrameView : UIView = {
         let frameView = UIView()
-        // change frameview color
+		// change frameview color
         frameView.layer.borderColor = UIColor.green.cgColor
         frameView.layer.borderWidth = 3
         return frameView
@@ -41,8 +41,10 @@ class QrCodeScanner: NSObject {
     
     init(cameraPresentView : UIView , delegate : QrCodeDelegate) {
         super.init()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation), name: UIDevice.orientationDidChangeNotification, object: nil)
+		
+        NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: nil)
         self.delegate = delegate
         self.cameraPresentView = cameraPresentView
         setCamera()
@@ -50,8 +52,11 @@ class QrCodeScanner: NSObject {
     }
     deinit {
         print("\(self) deinit")
-    }
-    private func setCamera(){
+    }        
+}
+///private method
+private extension QrCodeScanner {
+    func setCamera(){
         captureSession = AVCaptureSession()
         
         let position : AVCaptureDevice.Position = .back
@@ -112,7 +117,7 @@ class QrCodeScanner: NSObject {
         
     }
     
-    private func changeLayoutWith(state : LayoutState){
+    func changeLayoutWith(state : LayoutState){
         switch state {
         case .init_layout:
             scanLineView.isHidden = false
@@ -128,18 +133,7 @@ class QrCodeScanner: NSObject {
         }
     }
     
-    func startRunning(){
-        if (captureSession?.isRunning == false) {
-            captureSession.startRunning()
-            changeLayoutWith(state: .init_layout)
-        }
-    }
-    func stopRunning(){
-        if (captureSession?.isRunning == true) {
-            captureSession.stopRunning()
-        }
-    }
-    private func captureDevice(forPosition position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+    func captureDevice(forPosition position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         let discoverySession = AVCaptureDevice.DiscoverySession(
             deviceTypes: [.builtInWideAngleCamera],
             mediaType: .video,
@@ -147,7 +141,8 @@ class QrCodeScanner: NSObject {
         )
         return discoverySession.devices.first { $0.position == position }
     }
-    private func failed() {
+    
+    func failed() {
         let ac = UIAlertController(title: "Scanning not supported",
                                    message: "Your device does not support scanning a code from an item. Please use a device with a camera.",
                                    preferredStyle: .alert)
@@ -155,7 +150,8 @@ class QrCodeScanner: NSObject {
 //        present(ac, animated: true)
         captureSession = nil
     }
-    private func moveUpAndDownLine() {
+    
+    func moveUpAndDownLine() {
         let opts : UIView.AnimationOptions  = [.autoreverse , .repeat , .curveEaseInOut]
         
         UIView.animate(withDuration: scanSpeed , delay: 0, options: opts, animations: { [weak self] in
@@ -169,25 +165,37 @@ class QrCodeScanner: NSObject {
     }
     
     @objc
-    private func videoOrientation() {
-        if let connection = self.previewLayer.connection , connection.isVideoOrientationSupported {
-            DispatchQueue.main.async {
-                guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
-                    #if DEBUG
-                    fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
-                    #else
-                    return nil
-                    #endif
-                }
-                if let videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) {
-                    connection.videoOrientation = videoOrientation
-                }
+    func videoOrientation() {
+    if let connection = self.previewLayer.connection , connection.isVideoOrientationSupported {
+        DispatchQueue.main.async {
+            guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
+                #if DEBUG
+                fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
+                #else
+                return nil
+                #endif
+            }
+            if let videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) {
+                connection.videoOrientation = videoOrientation
             }
         }
     }
-    
 }
-
+}
+///public method
+extension QrCodeScanner {
+    func startRunning(){
+        if (captureSession?.isRunning == false) {
+            captureSession.startRunning()
+            changeLayoutWith(state: .init_layout)
+        }
+    }
+    func stopRunning(){
+        if (captureSession?.isRunning == true) {
+            captureSession.stopRunning()
+        }
+    }
+}
 extension QrCodeScanner : AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         captureSession.stopRunning()
