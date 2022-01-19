@@ -24,14 +24,14 @@ class QrCodeScanner: NSObject {
     private let scanLineView = UIView()
     private let scanSpeed = TimeInterval(1)
     private var cameraPresentView : UIView!
-    lazy var qrCodeFrameView : UIView = {
+    private lazy var qrCodeFrameView : UIView = {
         let frameView = UIView()
 		// change frameview color
         frameView.layer.borderColor = UIColor.green.cgColor
         frameView.layer.borderWidth = 3
         return frameView
     }()
-    lazy var scanView : UIView = {
+    private lazy var scanView : UIView = {
         let scanView = UIView()
         scanView.layer.borderWidth = 3
         scanView.layer.borderColor = UIColor.red.cgColor
