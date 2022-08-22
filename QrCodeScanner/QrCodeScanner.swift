@@ -26,22 +26,22 @@ class QrCodeScanner: NSObject {
     private var cameraPresentView : UIView!
     private lazy var qrCodeFrameView : UIView = {
         let frameView = UIView()
-		// change frameview color
+        // change frameview color
         frameView.layer.borderColor = UIColor.green.cgColor
         frameView.layer.borderWidth = 3
         return frameView
     }()
     private lazy var scanView : UIView = {
         let scanView = UIView()
-        scanView.layer.borderWidth = 3
-        scanView.layer.borderColor = UIColor.red.cgColor
+//        scanView.layer.borderWidth = 3
+//        scanView.layer.borderColor = UIColor.red.cgColor
         cameraPresentView.addSubview(scanView)
         return scanView
     }()
     
     init(cameraPresentView : UIView , delegate : QrCodeDelegate) {
         super.init()
-		
+        
         NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
@@ -52,7 +52,7 @@ class QrCodeScanner: NSObject {
     }
     deinit {
         print("\(self) deinit")
-    }        
+    }
 }
 ///private method
 private extension QrCodeScanner {
@@ -89,14 +89,43 @@ private extension QrCodeScanner {
         self.videoOrientation()
         
         let size = cameraPresentView.frame.size
-        let normal = CGFloat(20)
+        let normal = CGFloat(22)
         let scanRect = CGRect(x: normal,
                               y: normal,
                               width: size.width - (normal * 2),
                               height: size.height - (normal * 2))
-        
+//        scanView
         scanView.frame = scanRect
+        let lineLength = 26.7
+//        create path
+        let path = UIBezierPath()
+//        left-top
+        path.move(to: CGPoint(x: 0, y: lineLength))
+        path.addLine(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: lineLength, y: 0))
+//        right-top
+        path.move(to: CGPoint(x: scanView.frame.width - lineLength, y: 0))
+        path.addLine(to: CGPoint(x: scanView.frame.width, y: 0))
+        path.addLine(to: CGPoint(x: scanView.frame.width, y: lineLength))
+//        right-bottom
+        path.move(to: CGPoint(x: scanView.frame.width, y: scanView.frame.height - lineLength))
+        path.addLine(to: CGPoint(x: scanView.frame.width, y: scanView.frame.height))
+        path.addLine(to: CGPoint(x: scanView.frame.width - lineLength, y: scanView.frame.height))
+//        left-bottom
+        path.move(to: CGPoint(x: lineLength , y: scanView.frame.height))
+        path.addLine(to: CGPoint(x: 0, y: scanView.frame.height))
+        path.addLine(to: CGPoint(x: 0, y: scanView.frame.height - lineLength))
+
+//        create shape layer
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.strokeColor = UIColor.white.cgColor   // 線條顏色
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineWidth = 5
+        shapeLayer.path = path.cgPath
+        scanView.layer.addSublayer(shapeLayer)
         
+        
+//        scanLineView
         scanLineView.frame = CGRect(x: 5, y: 0, width: scanView.frame.width - 10, height: 2)
         scanLineView.backgroundColor = .green
 
@@ -172,7 +201,7 @@ private extension QrCodeScanner {
                 #if DEBUG
                 fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
                 #else
-                return nil
+                return
                 #endif
             }
             if let videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) {
