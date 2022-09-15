@@ -20,13 +20,14 @@ class QrCodeScanner: NSObject {
     }
     weak var delegate : QrCodeDelegate?
     private var captureSession: AVCaptureSession!
+    private let metadataOutput = AVCaptureMetadataOutput()
     private var previewLayer: AVCaptureVideoPreviewLayer!
-    private let scanLineView = UIView()
-    private let scanSpeed = TimeInterval(1)
     private var cameraPresentView : UIView!
-    private lazy var qrCodeFrameView : UIView = {
+    private let scanLineView = UIView()   //  掃描線
+    private let scanSpeed = TimeInterval(1)
+    private lazy var qrCodeFrameView : UIView = {   // 掃描到的qrcode框
         let frameView = UIView()
-        // change frameview color
+		// change frameview color
         frameView.layer.borderColor = UIColor.green.cgColor
         frameView.layer.borderWidth = 3
         return frameView
@@ -37,21 +38,26 @@ class QrCodeScanner: NSObject {
 //        scanView.layer.borderColor = UIColor.red.cgColor
         cameraPresentView.addSubview(scanView)
         return scanView
-    }()
-    
+    }()  // 外框
+
     init(cameraPresentView : UIView , delegate : QrCodeDelegate) {
         super.init()
-        
+		                
         NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
+        
+        // 避免退到背景回到前景時掃描線停止  moveUpAndDownLine
+        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAndDownLine), name: .willEnterForeground, object: nil)
+        
         self.delegate = delegate
         self.cameraPresentView = cameraPresentView
         setCamera()
-        
     }
     deinit {
-        print("\(self) deinit")
+        NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .willEnterForeground , object: nil)
+        DDLog("\(self) deinit")
     }
 }
 ///private method
@@ -73,7 +79,7 @@ private extension QrCodeScanner {
             failed()
             return
         }
-        let metadataOutput = AVCaptureMetadataOutput()
+        
         if (captureSession.canAddOutput(metadataOutput)) {
             captureSession.addOutput(metadataOutput)
             metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
@@ -86,16 +92,16 @@ private extension QrCodeScanner {
         previewLayer.frame = cameraPresentView.layer.bounds
         previewLayer.videoGravity = .resizeAspectFill
         cameraPresentView.layer.addSublayer(previewLayer)
-        self.videoOrientation()
-        
+                
         let size = cameraPresentView.frame.size
-        let normal = CGFloat(22)
+        let normal = CGFloat(50) // 內縮
         let scanRect = CGRect(x: normal,
                               y: normal,
                               width: size.width - (normal * 2),
                               height: size.height - (normal * 2))
 //        scanView
         scanView.frame = scanRect
+        
         let lineLength = 26.7
 //        create path
         let path = UIBezierPath()
@@ -118,7 +124,7 @@ private extension QrCodeScanner {
 
 //        create shape layer
         let shapeLayer = CAShapeLayer()
-        shapeLayer.strokeColor = UIColor.white.cgColor   // 線條顏色
+        shapeLayer.strokeColor = UIColor._E9EDF0.cgColor  // 線條顏色
         shapeLayer.fillColor = UIColor.clear.cgColor
         shapeLayer.lineWidth = 5
         shapeLayer.path = path.cgPath
@@ -134,11 +140,12 @@ private extension QrCodeScanner {
         
         scanView.addSubview(scanLineView)
         cameraPresentView.bringSubviewToFront(scanView)
-        
         self.moveUpAndDownLine()
-        metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: scanRect)
+
         startRunning()
-                        
+//        metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: CGRect.zero)
+        videoOrientation()
+
 //        NotificationCenter.default.addObserver(forName: .AVCaptureInputPortFormatDescriptionDidChange , object: nil, queue: nil) { [weak self] (noti) in
 //            guard let strongSelf = self else { return }
 //            metadataOutput.rectOfInterest = strongSelf.previewLayer.metadataOutputRectConverted(fromLayerRect: scanRect)
@@ -180,6 +187,7 @@ private extension QrCodeScanner {
         captureSession = nil
     }
     
+    @objc
     func moveUpAndDownLine() {
         let opts : UIView.AnimationOptions  = [.autoreverse , .repeat , .curveEaseInOut]
         
@@ -195,21 +203,23 @@ private extension QrCodeScanner {
     
     @objc
     func videoOrientation() {
-    if let connection = self.previewLayer.connection , connection.isVideoOrientationSupported {
-        DispatchQueue.main.async {
-            guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
-                #if DEBUG
-                fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
-                #else
-                return
-                #endif
-            }
-            if let videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) {
-                connection.videoOrientation = videoOrientation
+        if let connection = self.previewLayer.connection , connection.isVideoOrientationSupported {
+            DispatchQueue.main.async { [self] in
+                guard let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation else {
+                    #if DEBUG
+                        fatalError("Could not obtain UIInterfaceOrientation from a valid windowScene")
+                    #else
+                        return
+                    #endif
+                }
+                
+                if let videoOrientation = AVCaptureVideoOrientation(rawValue: orientation.rawValue) {
+                    connection.videoOrientation = videoOrientation
+                    metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: scanView.frame)
+                }
             }
         }
     }
-}
 }
 ///public method
 extension QrCodeScanner {
