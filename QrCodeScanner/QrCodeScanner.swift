@@ -27,7 +27,7 @@ class QrCodeScanner: NSObject {
     private let scanSpeed = TimeInterval(1)
     private lazy var qrCodeFrameView : UIView = {   // 掃描到的qrcode框
         let frameView = UIView()
-		// change frameview color
+        // change frameview color
         frameView.layer.borderColor = UIColor.green.cgColor
         frameView.layer.borderWidth = 3
         return frameView
@@ -42,13 +42,13 @@ class QrCodeScanner: NSObject {
 
     init(cameraPresentView : UIView , delegate : QrCodeDelegate) {
         super.init()
-		                
+                        
         NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
         
         // 避免退到背景回到前景時掃描線停止  moveUpAndDownLine
-        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAndDownLine), name: .willEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAndDownLine), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         self.delegate = delegate
         self.cameraPresentView = cameraPresentView
@@ -56,8 +56,8 @@ class QrCodeScanner: NSObject {
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .willEnterForeground , object: nil)
-        DDLog("\(self) deinit")
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification , object: nil)
+        print("\(self) deinit")
     }
 }
 ///private method
@@ -124,7 +124,7 @@ private extension QrCodeScanner {
 
 //        create shape layer
         let shapeLayer = CAShapeLayer()
-        shapeLayer.strokeColor = UIColor._E9EDF0.cgColor  // 線條顏色
+        shapeLayer.strokeColor = UIColor.white.cgColor  // 線條顏色
         shapeLayer.fillColor = UIColor.clear.cgColor
         shapeLayer.lineWidth = 5
         shapeLayer.path = path.cgPath
@@ -256,3 +256,4 @@ extension QrCodeScanner : AVCaptureMetadataOutputObjectsDelegate {
         delegate?.foundCode(code: code)
     }
 }
+
