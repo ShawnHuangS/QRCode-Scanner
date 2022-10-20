@@ -23,8 +23,14 @@ class QrCodeScanner: NSObject {
     private let metadataOutput = AVCaptureMetadataOutput()
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var cameraPresentView : UIView!
-    private let scanLineView = UIView()   //  掃描線
     private let scanSpeed = TimeInterval(1)
+    private lazy var scanLineView = { //  掃描線
+        let scanLineV = UIView()
+        scanLineV.frame = CGRect(x: 5, y: 0, width: scanView.frame.width - 10, height: 2)
+        scanLineV.backgroundColor = .green
+        return scanLineV
+    }()
+    
     private lazy var qrCodeFrameView : UIView = {   // 掃描到的qrcode框
         let frameView = UIView()
         // change frameview color
@@ -42,13 +48,14 @@ class QrCodeScanner: NSObject {
 
     init(cameraPresentView : UIView , delegate : QrCodeDelegate) {
         super.init()
+        
                         
         NotificationCenter.default.addObserver(self, selector: #selector(videoOrientation),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
         
         // 避免退到背景回到前景時掃描線停止  moveUpAndDownLine
-        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAndDownLine), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAndDownLine), name: .willEnterForeground, object: nil)
         
         self.delegate = delegate
         self.cameraPresentView = cameraPresentView
@@ -56,7 +63,7 @@ class QrCodeScanner: NSObject {
     }
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification , object: nil)
+        NotificationCenter.default.removeObserver(self, name: .willEnterForeground , object: nil)
         print("\(self) deinit")
     }
 }
@@ -94,7 +101,7 @@ private extension QrCodeScanner {
         cameraPresentView.layer.addSublayer(previewLayer)
                 
         let size = cameraPresentView.frame.size
-        let normal = CGFloat(50) // 內縮
+        let normal =  size.width * 0.9 // CGFloat(20) // 內縮
         let scanRect = CGRect(x: normal,
                               y: normal,
                               width: size.width - (normal * 2),
@@ -130,10 +137,18 @@ private extension QrCodeScanner {
         shapeLayer.path = path.cgPath
         scanView.layer.addSublayer(shapeLayer)
         
+        // create mask layer
+        let maskView = UIView(frame: cameraPresentView.bounds)
+        maskView.backgroundColor = .black.withAlphaComponent(0.6)
+        let blackPath = UIBezierPath(rect: maskView.frame)
+        let emptyPath = UIBezierPath(rect: scanView.frame).reversing()
+        blackPath.append(emptyPath)
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = blackPath.cgPath
+        maskView.layer.mask = maskLayer
+        cameraPresentView.addSubview(maskView)
         
-//        scanLineView
-        scanLineView.frame = CGRect(x: 5, y: 0, width: scanView.frame.width - 10, height: 2)
-        scanLineView.backgroundColor = .green
+
 
         cameraPresentView.addSubview(qrCodeFrameView)
         cameraPresentView.bringSubviewToFront(qrCodeFrameView)
@@ -257,3 +272,7 @@ extension QrCodeScanner : AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 
+
+extension Notification.Name {
+    static let willEnterForeground = UIApplication.willEnterForegroundNotification
+}
